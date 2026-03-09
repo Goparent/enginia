@@ -17,7 +17,6 @@
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   html { scroll-behavior: smooth; }
 
   body {
@@ -29,7 +28,31 @@
     overflow-x: hidden;
   }
 
-  /* NAV */
+  /* ─── 1. SCROLL PROGRESS BAR ─── */
+  .scroll-progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: var(--accent);
+    z-index: 300;
+    width: 0%;
+    transition: width 0.08s linear;
+    box-shadow: 0 0 8px rgba(255,77,28,0.6);
+  }
+
+  /* ─── 2. GRAIN / NOISE TEXTURE ─── */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    background-size: 180px;
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* ─── NAV ─── */
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
     padding: 18px 48px;
@@ -55,11 +78,12 @@
     border: none;
     cursor: pointer;
     letter-spacing: 0.3px;
-    transition: background 0.2s;
+    transition: background 0.2s, transform 0.15s;
+    display: inline-block;
   }
   .nav-cta:hover { background: var(--accent); }
 
-  /* HERO */
+  /* ─── HERO ─── */
   .hero {
     min-height: 100vh;
     padding: 140px 48px 80px;
@@ -103,6 +127,7 @@
     font-style: normal;
     color: var(--accent);
     position: relative;
+    display: inline-block;
   }
   h1 em::after {
     content: '';
@@ -124,6 +149,7 @@
 
   .cta-group { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
 
+  /* ─── 6. MAGNETIC BUTTON (base styles) ─── */
   .btn-primary {
     background: var(--accent);
     color: #fff;
@@ -136,11 +162,12 @@
     text-decoration: none;
     display: inline-block;
     letter-spacing: 0.2px;
-    transition: transform 0.15s, box-shadow 0.15s;
+    transition: box-shadow 0.15s;
     box-shadow: 4px 4px 0 var(--ink);
+    position: relative;
+    will-change: transform;
   }
   .btn-primary:hover {
-    transform: translate(-2px, -2px);
     box-shadow: 6px 6px 0 var(--ink);
   }
   .cta-microcopy {
@@ -149,7 +176,7 @@
     font-weight: 300;
   }
 
-  /* HERO VISUAL */
+  /* ─── HERO VISUAL ─── */
   .hero-visual {
     position: relative;
     height: 520px;
@@ -157,6 +184,8 @@
     align-items: center;
     justify-content: center;
   }
+
+  /* ─── 8. ANIMATED FLOW DIAGRAM ─── */
   .process-diagram {
     width: 100%;
     max-width: 440px;
@@ -184,10 +213,37 @@
     border-bottom: 1px solid rgba(255,255,255,0.08);
     font-size: 13px;
     font-weight: 300;
-    opacity: 0.6;
+    opacity: 0;
+    transform: translateX(-12px);
+    animation: flowRowIn 0.5s ease forwards;
   }
+  .flow-row:nth-child(1) { animation-delay: 0.8s; }
+  .flow-row:nth-child(2) { animation-delay: 1.05s; }
+  .flow-row:nth-child(3) { animation-delay: 1.3s; }
+  .flow-row:nth-child(4) { animation-delay: 1.55s; }
+  .flow-row:nth-child(5) { animation-delay: 1.8s; }
   .flow-row:last-child { border-bottom: none; }
-  .flow-dot { width: 8px; height: 8px; background: #FF4D1C; flex-shrink: 0; }
+
+  @keyframes flowRowIn {
+    to { opacity: 0.6; transform: translateX(0); }
+  }
+
+  .flow-dot {
+    width: 8px; height: 8px;
+    background: #FF4D1C;
+    flex-shrink: 0;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  .flow-row:nth-child(2) .flow-dot { animation-delay: 0.4s; }
+  .flow-row:nth-child(3) .flow-dot { animation-delay: 0.8s; }
+  .flow-row:nth-child(4) .flow-dot { animation-delay: 1.2s; }
+  .flow-row:nth-child(5) .flow-dot { animation-delay: 1.6s; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.6); }
+  }
+
   .flow-arrow { font-size: 18px; margin: 0 4px; opacity: 0.3; }
 
   .diagram-after {
@@ -198,6 +254,9 @@
     border: 2px solid var(--ink);
     padding: 24px;
     box-shadow: 8px 8px 0 var(--accent);
+    opacity: 0;
+    transform: translateY(16px);
+    animation: fadeUp 0.6s 2.1s ease forwards;
   }
   .diagram-after::before {
     content: 'DESPUÉS';
@@ -226,7 +285,42 @@
     color: var(--accent);
   }
 
-  /* SOCIAL PROOF BAR */
+  /* ─── 7. MARQUEE TICKER ─── */
+  .marquee-strip {
+    background: var(--accent);
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 12px 0;
+    border-top: 2px solid var(--ink);
+    border-bottom: 2px solid var(--ink);
+  }
+  .marquee-track {
+    display: inline-flex;
+    gap: 0;
+    animation: marquee 22s linear infinite;
+  }
+  .marquee-track:hover { animation-play-state: paused; }
+  .marquee-item {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #fff;
+    padding: 0 28px;
+  }
+  .marquee-dot {
+    color: rgba(255,255,255,0.4);
+    font-size: 18px;
+    line-height: 1;
+    padding: 0 4px;
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* ─── SOCIAL PROOF BAR ─── */
   .proof-bar {
     background: var(--ink);
     color: var(--paper);
@@ -242,11 +336,14 @@
     flex-direction: column;
     gap: 4px;
   }
+
+  /* ─── 3. COUNTING NUMBERS ─── */
   .proof-val {
     font-family: 'Syne', sans-serif;
     font-weight: 800;
     font-size: 28px;
     color: var(--accent);
+    transition: color 0.3s;
   }
   .proof-label {
     font-size: 12px;
@@ -260,7 +357,7 @@
     background: rgba(255,255,255,0.12);
   }
 
-  /* SECTIONS */
+  /* ─── SECTIONS ─── */
   section { padding: 100px 48px; }
   .section-label {
     font-size: 11px;
@@ -286,7 +383,7 @@
     margin-bottom: 60px;
   }
 
-  /* PROBLEM */
+  /* ─── PROBLEM ─── */
   .problem-section { background: #F0EDE5; }
   .pain-grid {
     display: grid;
@@ -322,7 +419,7 @@
     line-height: 1.5;
   }
 
-  /* SOLUTION */
+  /* ─── SOLUTION ─── */
   .solution-section {
     background: var(--ink);
     color: var(--paper);
@@ -338,9 +435,12 @@
   .solution-card {
     border: 1px solid rgba(255,255,255,0.1);
     padding: 36px;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, transform 0.2s;
   }
-  .solution-card:hover { border-color: var(--accent); }
+  .solution-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+  }
   .solution-icon {
     font-size: 32px;
     margin-bottom: 20px;
@@ -359,19 +459,65 @@
     line-height: 1.7;
   }
 
-  /* HOW IT WORKS */
+  /* ─── 9. HORIZONTAL SCROLL STEPS ─── */
   .steps-section { background: var(--paper); }
-  .steps-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2px;
-    position: relative;
+  .steps-section .section-intro { margin-bottom: 32px; }
+
+  .steps-scroll-hint {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--mid);
+    font-weight: 500;
+    margin-bottom: 28px;
+    opacity: 0.7;
   }
+  .steps-scroll-hint svg { animation: arrowBounce 1.5s ease-in-out infinite; }
+  @keyframes arrowBounce {
+    0%, 100% { transform: translateX(0); }
+    50%       { transform: translateX(6px); }
+  }
+
+  .steps-wrapper {
+    display: flex;
+    gap: 2px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    cursor: grab;
+    user-select: none;
+    padding-bottom: 4px;
+  }
+  .steps-wrapper::-webkit-scrollbar { display: none; }
+  .steps-wrapper.grabbing { cursor: grabbing; }
+
   .step-card {
     background: #F0EDE5;
     padding: 48px 36px;
     position: relative;
+    scroll-snap-align: start;
+    flex: 0 0 min(380px, 80vw);
+    transition: background 0.25s;
   }
+  .step-card:hover { background: #e8e4da; }
+
+  .step-dots {
+    display: flex;
+    gap: 6px;
+    margin-top: 24px;
+  }
+  .step-dot {
+    width: 6px; height: 6px;
+    background: var(--border);
+    border-radius: 50%;
+    transition: background 0.2s;
+  }
+  .step-dot.active { background: var(--accent); }
+
   .step-num {
     font-family: 'Syne', sans-serif;
     font-weight: 800;
@@ -412,7 +558,7 @@
     display: inline-block;
   }
 
-  /* PROOF */
+  /* ─── PROOF ─── */
   .proof-section { background: var(--paper); }
   .testimonials-grid {
     display: grid;
@@ -509,34 +655,41 @@
     letter-spacing: 1px;
   }
 
-  /* OBJECTIONS */
-  .objections-section {
-    background: #F0EDE5;
-  }
-  .objections-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-  .objection-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2px;
-  }
-  .objection-q, .objection-a {
-    padding: 32px 36px;
+  /* ─── 10. FAQ ACCORDION ─── */
+  .objections-section { background: #F0EDE5; }
+  .objections-grid { display: flex; flex-direction: column; gap: 2px; }
+
+  .accordion-item {
     background: var(--paper);
+    overflow: hidden;
   }
-  .objection-q {
+  .accordion-trigger {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 16px;
+    padding: 28px 36px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font-family: 'DM Sans', sans-serif;
     font-size: 17px;
     font-weight: 400;
     font-style: italic;
     color: var(--mid);
+    transition: color 0.2s;
+  }
+  .accordion-trigger::before {
+    display: none;
+  }
+  .accordion-trigger-inner {
     display: flex;
     align-items: center;
     gap: 16px;
   }
-  .objection-q::before {
+  .accordion-trigger-inner::before {
     content: '?';
     font-family: 'Syne', sans-serif;
     font-weight: 800;
@@ -544,21 +697,47 @@
     color: var(--border);
     flex-shrink: 0;
   }
-  .objection-a {
+  .accordion-trigger:hover { color: var(--ink); }
+  .accordion-chevron {
+    width: 28px; height: 28px;
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.3s, background 0.2s, border-color 0.2s;
+    font-size: 14px;
+    color: var(--mid);
+  }
+  .accordion-item.open .accordion-chevron {
+    transform: rotate(45deg);
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .accordion-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+  .accordion-body-inner {
+    padding: 0 36px 28px 36px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
     font-size: 16px;
     font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 16px;
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+    margin-top: -1px;
   }
-  .objection-a::before {
+  .accordion-body-inner::before {
     content: '→';
     font-size: 20px;
     color: var(--accent);
     flex-shrink: 0;
+    margin-top: 2px;
   }
 
-  /* FINAL CTA */
+  /* ─── FINAL CTA ─── */
   .final-cta {
     background: var(--ink);
     color: var(--paper);
@@ -582,9 +761,7 @@
     max-width: 680px;
     margin: 0 auto 20px;
   }
-  .final-cta .section-intro {
-    margin: 0 auto 48px;
-  }
+  .final-cta .section-intro { margin: 0 auto 48px; }
   .urgency-note {
     font-size: 14px;
     color: rgba(245,243,238,0.4);
@@ -599,7 +776,7 @@
   }
   .risk-reversal span { color: var(--paper); }
 
-  /* FOOTER */
+  /* ─── FOOTER ─── */
   footer {
     background: var(--ink);
     color: rgba(245,243,238,0.3);
@@ -612,7 +789,21 @@
   }
   footer .logo { color: var(--paper); font-size: 16px; }
 
-  /* ANIMATIONS */
+  /* ─── 5. SCROLL-TRIGGERED REVEAL ─── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.65s ease, transform 0.65s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.22s; }
+  .reveal-delay-3 { transition-delay: 0.34s; }
+
+  /* ─── HERO ANIMATIONS ─── */
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(20px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -630,37 +821,46 @@
     opacity: 0;
   }
 
-  /* RESPONSIVE */
+  /* ─── RESPONSIVE ─── */
   @media (max-width: 900px) {
     nav { padding: 16px 24px; }
     .hero { grid-template-columns: 1fr; padding: 120px 24px 60px; }
     .hero-visual { display: none; }
     section { padding: 72px 24px; }
     .proof-bar { padding: 28px 24px; }
-    .pain-grid, .solution-grid, .steps-grid { grid-template-columns: 1fr; }
+    .pain-grid, .solution-grid { grid-template-columns: 1fr; }
     .testimonials-grid { grid-template-columns: 1fr; }
-    .objection-row { grid-template-columns: 1fr; }
     .case-study-banner { grid-template-columns: 1fr; text-align: center; }
     footer { flex-direction: column; gap: 12px; text-align: center; }
+    .steps-scroll-hint { display: flex; }
+    .step-card { flex: 0 0 85vw; }
+    .accordion-trigger { padding: 22px 24px; }
+    .accordion-body-inner { padding: 0 24px 22px 24px; padding-top: 16px; }
+  }
+  @media (min-width: 901px) {
+    .steps-scroll-hint { display: flex; }
   }
 </style>
 </head>
 <body>
 
+<!-- SCROLL PROGRESS -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
 <!-- NAV -->
 <nav>
   <div class="logo">engi<span>nia</span></div>
-  <a href="#cta" class="nav-cta">Habla con nosotros →</a>
+  <a href="#cta" class="nav-cta magnetic-btn">Habla con nosotros →</a>
 </nav>
 
 <!-- HERO -->
 <section class="hero" style="padding-top: 140px;">
   <div class="hero-content">
     <div class="hero-label">Enginia · Automatización con IA · España</div>
-    <h1>Tu empresa trabaja.<br><em>Sin que nadie</em><br>lo haga manualmente.</h1>
+    <h1>Tu empresa trabaja.<br><em id="scrambleTarget">Sin que nadie</em><br>lo haga manualmente.</h1>
     <p class="subheadline">Convertimos los procesos manuales de tu negocio en sistemas inteligentes que trabajan solos, para que tú puedas escalar sin contratar más.</p>
     <div class="cta-group">
-      <a href="mailto:enginiagencia@gmail.com" class="btn-primary">Solicita tu auditoría gratuita →</a>
+      <a href="mailto:enginiagencia@gmail.com?subject=Quiero%20mi%20auditor%C3%ADa%20gratuita&body=Hola%2C%20me%20interesa%20saber%20c%C3%B3mo%20pod%C3%A9is%20automatizar%20mi%20negocio.%0A%0ANombre%3A%0AEmpresa%3A%0ATel%C3%A9fono%3A" class="btn-primary magnetic-btn">Solicita tu auditoría gratuita →</a>
       <span class="cta-microcopy">En 30 minutos identificamos dónde estás perdiendo tiempo y dinero</span>
     </div>
   </div>
@@ -692,23 +892,54 @@
 <!-- SOCIAL PROOF BAR -->
 <div class="proof-bar">
   <div class="proof-item">
-    <span class="proof-val">+40</span>
+    <span class="proof-val" data-count="40" data-prefix="+" data-suffix="">+40</span>
     <span class="proof-label">Procesos automatizados</span>
   </div>
   <div class="proof-divider"></div>
   <div class="proof-item">
-    <span class="proof-val">22h</span>
+    <span class="proof-val" data-count="22" data-prefix="" data-suffix="h">22h</span>
     <span class="proof-label">Ahorradas por empresa / semana</span>
   </div>
   <div class="proof-divider"></div>
   <div class="proof-item">
-    <span class="proof-val">14 días</span>
+    <span class="proof-val" data-count="14" data-prefix="" data-suffix=" días">14 días</span>
     <span class="proof-label">Tiempo medio hasta primer resultado</span>
   </div>
   <div class="proof-divider"></div>
   <div class="proof-item">
-    <span class="proof-val">100%</span>
+    <span class="proof-val" data-count="100" data-prefix="" data-suffix="%">100%</span>
     <span class="proof-label">Clientes sin equipo técnico previo</span>
+  </div>
+</div>
+
+<!-- MARQUEE TICKER -->
+<div class="marquee-strip">
+  <div class="marquee-track">
+    <span class="marquee-item">Make</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">n8n</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">OpenAI</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Zapier</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">HubSpot</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Notion</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Google Workspace</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">WhatsApp API</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Airtable</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Slack</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Typeform</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Stripe</span><span class="marquee-dot">·</span>
+    <!-- duplicate for seamless loop -->
+    <span class="marquee-item">Make</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">n8n</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">OpenAI</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Zapier</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">HubSpot</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Notion</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Google Workspace</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">WhatsApp API</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Airtable</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Slack</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Typeform</span><span class="marquee-dot">·</span>
+    <span class="marquee-item">Stripe</span><span class="marquee-dot">·</span>
   </div>
 </div>
 
@@ -718,17 +949,17 @@
   <h2>Reconoces esto.</h2>
   <p class="section-intro">No es falta de talento. Es que tu equipo pasa el día haciendo tareas que no requieren talento.</p>
   <div class="pain-grid">
-    <div class="pain-card">
+    <div class="pain-card reveal reveal-delay-1">
       <div class="pain-number">01</div>
       <p class="pain-quote">"Sé que hay herramientas de IA ahí fuera, pero cada vez que intento implementar algo acabo tres días después sin nada funcionando y sintiéndome idiota."</p>
       <p class="pain-consequence">Resultado: sigues pagando a personas para hacer trabajo de máquina, y cada mes que pasa tu competencia se distancia más.</p>
     </div>
-    <div class="pain-card">
+    <div class="pain-card reveal reveal-delay-2">
       <div class="pain-number">02</div>
       <p class="pain-quote">"No puedo escalar porque necesitaría contratar a tres personas más. Y no tengo ni presupuesto ni tiempo para formarlas."</p>
       <p class="pain-consequence">Resultado: rechazas proyectos buenos o los aceptas y entregas tarde. Tu reputación paga el precio del crecimiento.</p>
     </div>
-    <div class="pain-card">
+    <div class="pain-card reveal reveal-delay-3">
       <div class="pain-number">03</div>
       <p class="pain-quote">"Mis procesos están todos en la cabeza de una persona. Si esa persona se va mañana, tenemos un problema serio."</p>
       <p class="pain-consequence">Resultado: tu empresa depende de individuos, no de sistemas. Eso no es un negocio, es un trabajo con logo.</p>
@@ -742,17 +973,17 @@
   <h2>Lo que cambia cuando<br>trabajas con Enginia.</h2>
   <p class="section-intro">No te vendemos software. Te construimos el sistema operativo que tu empresa necesitaba desde hace dos años.</p>
   <div class="solution-grid">
-    <div class="solution-card">
+    <div class="solution-card reveal reveal-delay-1">
       <div class="solution-icon">⚡</div>
       <h3>Tus operaciones corren solas</h3>
       <p>Cada lead que entra, cada pedido, cada solicitud de cliente se procesa, clasifica y responde automáticamente. Tu equipo se entera del resultado, no del proceso.</p>
     </div>
-    <div class="solution-card">
+    <div class="solution-card reveal reveal-delay-2">
       <div class="solution-icon">📈</div>
       <h3>Escalas sin contratar</h3>
       <p>Con los sistemas que construimos, pasar de 50 a 200 clientes no requiere 3 personas nuevas. El volumen crece; la carga operativa, no. Eso es margen real.</p>
     </div>
-    <div class="solution-card">
+    <div class="solution-card reveal reveal-delay-3">
       <div class="solution-icon">🏗️</div>
       <h3>Tu negocio deja de depender de ti</h3>
       <p>Documentamos, automatizamos y sistematizamos cada proceso crítico. Lo que antes vivía en la cabeza de alguien, ahora vive en un sistema que funciona a las 3 de la mañana.</p>
@@ -760,18 +991,29 @@
   </div>
 </section>
 
-<!-- HOW IT WORKS -->
+<!-- HOW IT WORKS — HORIZONTAL SCROLL -->
 <section class="steps-section" id="como">
   <div class="section-label">Cómo funciona</div>
   <h2>Tres pasos.<br>Resultados en dos semanas.</h2>
   <p class="section-intro">Sin proyectos eternos ni consultores que desaparecen. Velocidad y precisión desde el día uno.</p>
-  <div class="steps-grid">
+  <div class="steps-scroll-hint">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Arrastra para explorar
+  </div>
+  <div class="steps-wrapper" id="stepsWrapper">
     <div class="step-card">
       <div class="step-num">1</div>
       <div class="step-tag">Semana 1</div>
       <h3>Auditoría de procesos</h3>
       <p>Mapeamos en 48 horas los 5 procesos que más tiempo y dinero te están costando. Te entregamos un diagnóstico concreto con ROI estimado por automatización.</p>
       <div class="step-duration">Gratis · Sin compromiso</div>
+      <div class="step-dots">
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+        <div class="step-dot"></div>
+      </div>
     </div>
     <div class="step-card">
       <div class="step-num">2</div>
@@ -779,6 +1021,11 @@
       <h3>Construcción e implementación</h3>
       <p>Diseñamos e implementamos los agentes de IA y las integraciones usando Make, n8n, y modelos de lenguaje. Tú no tocas código. Nosotros entregamos el sistema listo.</p>
       <div class="step-duration">Entrega en 14–21 días</div>
+      <div class="step-dots">
+        <div class="step-dot"></div>
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+      </div>
     </div>
     <div class="step-card">
       <div class="step-num">3</div>
@@ -786,6 +1033,11 @@
       <h3>Optimización continua</h3>
       <p>Los sistemas se ajustan, mejoran y expanden con tu negocio. Seguimiento mensual para identificar nuevas oportunidades de automatización antes de que siquiera las veas.</p>
       <div class="step-duration">Soporte incluido</div>
+      <div class="step-dots">
+        <div class="step-dot"></div>
+        <div class="step-dot"></div>
+        <div class="step-dot active"></div>
+      </div>
     </div>
   </div>
 </section>
@@ -796,7 +1048,7 @@
   <h2>Lo que dicen quienes<br>ya lo tienen funcionando.</h2>
   <p class="section-intro">No promesas. Números.</p>
   <div class="testimonials-grid">
-    <div class="testimonial">
+    <div class="testimonial reveal reveal-delay-1">
       <p class="testimonial-text">Llevaba dos años sabiendo que necesitaba automatizar nuestro proceso de onboarding de clientes. Siempre lo postergaba porque asumía que sería un proyecto de meses. Enginia lo tenía funcionando en 12 días. Ahora procesamos el doble de clientes con el mismo equipo.</p>
       <div class="testimonial-author">
         <div class="author-avatar">CM</div>
@@ -806,7 +1058,7 @@
         </div>
       </div>
     </div>
-    <div class="testimonial">
+    <div class="testimonial reveal reveal-delay-2">
       <p class="testimonial-text">Mi equipo perdía 15 horas semanales gestionando pedidos, confirmaciones y actualizaciones de stock entre tres sistemas distintos. Ahora ese flujo corre solo. Mi equipo hace trabajo real. Y yo puedo coger vacaciones sin que se incendie todo.</p>
       <div class="testimonial-author">
         <div class="author-avatar">LR</div>
@@ -817,7 +1069,7 @@
       </div>
     </div>
   </div>
-  <div class="case-study-banner">
+  <div class="case-study-banner reveal">
     <div>
       <h3>Caso: Consultoría B2B · Valencia</h3>
       <p>Automatizamos la generación de propuestas, el seguimiento de leads y el reporting semanal. El equipo de ventas dejó de hacer trabajo administrativo y se centró en cerrar.</p>
@@ -829,24 +1081,43 @@
   </div>
 </section>
 
-<!-- OBJECTION HANDLER -->
+<!-- OBJECTION HANDLER — ACCORDION -->
 <section class="objections-section" id="faq">
   <div class="section-label">Las dudas habituales</div>
   <h2>Seguramente estás<br>pensando esto.</h2>
   <p class="section-intro" style="margin-bottom: 40px;">Las responderemos directamente.</p>
   <div class="objections-grid">
-    <div class="objection-row">
-      <div class="objection-q">"No tenemos equipo técnico. Esto no es para nosotros."</div>
-      <div class="objection-a">El 100% de nuestros clientes llegaron sin equipo técnico. Nosotros construimos, implementamos y mantenemos. Tú solo usas el resultado.</div>
+
+    <div class="accordion-item">
+      <button class="accordion-trigger">
+        <span class="accordion-trigger-inner">"No tenemos equipo técnico. Esto no es para nosotros."</span>
+        <span class="accordion-chevron">+</span>
+      </button>
+      <div class="accordion-body">
+        <div class="accordion-body-inner">El 100% de nuestros clientes llegaron sin equipo técnico. Nosotros construimos, implementamos y mantenemos. Tú solo usas el resultado.</div>
+      </div>
     </div>
-    <div class="objection-row">
-      <div class="objection-q">"Ya probé con herramientas de automatización y no funcionó."</div>
-      <div class="objection-a">Las herramientas no fallan; falla la implementación sin estrategia. Nosotros no te vendemos una suscripción de Make. Te entregamos el sistema completo, diseñado para tu caso específico.</div>
+
+    <div class="accordion-item">
+      <button class="accordion-trigger">
+        <span class="accordion-trigger-inner">"Ya probé con herramientas de automatización y no funcionó."</span>
+        <span class="accordion-chevron">+</span>
+      </button>
+      <div class="accordion-body">
+        <div class="accordion-body-inner">Las herramientas no fallan; falla la implementación sin estrategia. Nosotros no te vendemos una suscripción de Make. Te entregamos el sistema completo, diseñado para tu caso específico.</div>
+      </div>
     </div>
-    <div class="objection-row">
-      <div class="objection-q">"¿Y si cambio de herramienta o de proceso en 6 meses?"</div>
-      <div class="objection-a">Construimos sobre estándares abiertos (n8n, Make, APIs nativas) para que no quedes atrapado. Adaptarse es más barato que empezar de cero.</div>
+
+    <div class="accordion-item">
+      <button class="accordion-trigger">
+        <span class="accordion-trigger-inner">"¿Y si cambio de herramienta o de proceso en 6 meses?"</span>
+        <span class="accordion-chevron">+</span>
+      </button>
+      <div class="accordion-body">
+        <div class="accordion-body-inner">Construimos sobre estándares abiertos (n8n, Make, APIs nativas) para que no quedes atrapado. Adaptarse es más barato que empezar de cero.</div>
+      </div>
     </div>
+
   </div>
 </section>
 
@@ -857,7 +1128,7 @@
   <p class="section-intro">La auditoría es gratuita y sin compromiso. Te llevamos un diagnóstico con los 3 procesos que más impacto tendrían si los automatizas primero.</p>
   <p class="urgency-note">Aceptamos máximo 4 nuevos clientes al mes para garantizar calidad de implementación. Quedan plazas para marzo.</p>
   <div class="cta-group" style="align-items: center;">
-    <a href="mailto:enginiagencia@gmail.com" class="btn-primary">Solicita tu auditoría gratuita →</a>
+    <a href="mailto:enginiagencia@gmail.com?subject=Quiero%20mi%20auditor%C3%ADa%20gratuita&body=Hola%2C%20me%20interesa%20saber%20c%C3%B3mo%20pod%C3%A9is%20automatizar%20mi%20negocio.%0A%0ANombre%3A%0AEmpresa%3A%0ATel%C3%A9fono%3A" class="btn-primary magnetic-btn">Solicita tu auditoría gratuita →</a>
   </div>
   <p class="risk-reversal">Sin contrato de permanencia · <span>Primeros resultados en 14 días</span> · Si no identificamos al menos 10 horas semanales automatizables, te decimos que no somos la solución adecuada.</p>
 </section>
@@ -866,8 +1137,181 @@
 <footer>
   <div class="logo">engi<span>nia</span></div>
   <span>© 2025 Enginia · Automatización con IA · España</span>
-  <span>enginiagencia@gmail.com</span>
+  <a href="mailto:enginiagencia@gmail.com" style="color: inherit; text-decoration: none;">enginiagencia@gmail.com</a>
 </footer>
 
+<script>
+// ─── 1. SCROLL PROGRESS BAR ───────────────────────────────────────────────
+const progressBar = document.getElementById('scrollProgress');
+window.addEventListener('scroll', () => {
+  const scrolled = window.scrollY;
+  const maxScroll = document.body.scrollHeight - window.innerHeight;
+  const pct = maxScroll > 0 ? (scrolled / maxScroll) * 100 : 0;
+  progressBar.style.width = pct + '%';
+}, { passive: true });
+
+
+// ─── 4. SCRAMBLE TEXT ────────────────────────────────────────────────────
+const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*';
+function scramble(el, finalText, duration = 1200) {
+  let start = null;
+  const totalFrames = Math.round(duration / 16);
+  let frame = 0;
+
+  function step(ts) {
+    if (!start) start = ts;
+    frame++;
+    const progress = frame / totalFrames;
+    const revealCount = Math.floor(progress * finalText.length);
+
+    let display = '';
+    for (let i = 0; i < finalText.length; i++) {
+      if (i < revealCount) {
+        display += finalText[i];
+      } else if (finalText[i] === ' ') {
+        display += ' ';
+      } else {
+        display += CHARS[Math.floor(Math.random() * CHARS.length)];
+      }
+    }
+    el.textContent = display;
+
+    if (frame < totalFrames) {
+      requestAnimationFrame(step);
+    } else {
+      el.textContent = finalText;
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+// Trigger scramble after hero fade-in
+setTimeout(() => {
+  const target = document.getElementById('scrambleTarget');
+  if (target) scramble(target, 'Sin que nadie', 1100);
+}, 600);
+
+
+// ─── 3. COUNTING NUMBERS ─────────────────────────────────────────────────
+function easeOutQuart(t) { return 1 - Math.pow(1 - t, 4); }
+
+function animateCounter(el, target, prefix, suffix, duration = 1600) {
+  let start = null;
+  function step(ts) {
+    if (!start) start = ts;
+    const elapsed = ts - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = easeOutQuart(progress);
+    const current = Math.round(eased * target);
+    el.textContent = prefix + current + suffix;
+    if (progress < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      const target = parseInt(el.dataset.count);
+      const prefix = el.dataset.prefix || '';
+      const suffix = el.dataset.suffix || '';
+      animateCounter(el, target, prefix, suffix);
+      counterObserver.unobserve(el);
+    }
+  });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('[data-count]').forEach(el => counterObserver.observe(el));
+
+
+// ─── 5. SCROLL-TRIGGERED STAGGER REVEALS ────────────────────────────────
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+
+// ─── 6. MAGNETIC BUTTONS ─────────────────────────────────────────────────
+function initMagnetic(selector, strength = 0.18) {
+  document.querySelectorAll(selector).forEach(btn => {
+    btn.addEventListener('mousemove', (e) => {
+      const rect = btn.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = (e.clientX - cx) * strength;
+      const dy = (e.clientY - cy) * strength;
+      btn.style.transform = `translate(${dx}px, ${dy}px)`;
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.style.transition = 'transform 0.4s cubic-bezier(0.23,1,0.32,1)';
+      btn.style.transform = 'translate(0,0)';
+      setTimeout(() => { btn.style.transition = ''; }, 400);
+    });
+  });
+}
+initMagnetic('.magnetic-btn', 0.18);
+
+
+// ─── 9. HORIZONTAL SCROLL — DRAG TO SCROLL ───────────────────────────────
+const wrapper = document.getElementById('stepsWrapper');
+if (wrapper) {
+  let isDown = false, startX, scrollLeft;
+
+  wrapper.addEventListener('mousedown', (e) => {
+    isDown = true;
+    wrapper.classList.add('grabbing');
+    startX = e.pageX - wrapper.offsetLeft;
+    scrollLeft = wrapper.scrollLeft;
+  });
+  wrapper.addEventListener('mouseleave', () => { isDown = false; wrapper.classList.remove('grabbing'); });
+  wrapper.addEventListener('mouseup', () => { isDown = false; wrapper.classList.remove('grabbing'); });
+  wrapper.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - wrapper.offsetLeft;
+    const walk = (x - startX) * 1.4;
+    wrapper.scrollLeft = scrollLeft - walk;
+  });
+}
+
+
+// ─── 10. FAQ ACCORDION ────────────────────────────────────────────────────
+document.querySelectorAll('.accordion-trigger').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const item = btn.closest('.accordion-item');
+    const body = item.querySelector('.accordion-body');
+    const inner = item.querySelector('.accordion-body-inner');
+    const isOpen = item.classList.contains('open');
+
+    // Close all
+    document.querySelectorAll('.accordion-item.open').forEach(openItem => {
+      openItem.classList.remove('open');
+      openItem.querySelector('.accordion-body').style.maxHeight = '0';
+    });
+
+    // Toggle current
+    if (!isOpen) {
+      item.classList.add('open');
+      body.style.maxHeight = inner.scrollHeight + 48 + 'px';
+    }
+  });
+});
+
+// Open first by default
+const firstItem = document.querySelector('.accordion-item');
+if (firstItem) {
+  const body = firstItem.querySelector('.accordion-body');
+  const inner = firstItem.querySelector('.accordion-body-inner');
+  firstItem.classList.add('open');
+  setTimeout(() => { body.style.maxHeight = inner.scrollHeight + 48 + 'px'; }, 100);
+}
+</script>
 </body>
 </html>
